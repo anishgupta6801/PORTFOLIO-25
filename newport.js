@@ -18,62 +18,56 @@ window.addEventListener('scroll', () => {
     }
 });
 
-// Form submission handling
+// Form submission handling for Netlify Forms
 const contactForm = document.getElementById('contactForm');
 const formStatus = document.getElementById('formStatus');
 
 if (contactForm && formStatus) {
-    contactForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
+    // This is now handled by Netlify Forms, but we'll add some client-side validation
+    // and feedback for a better user experience
+    contactForm.addEventListener('submit', function(e) {
+        // Don't prevent default - let Netlify handle the form submission
 
-        // Get form data
+        // Get form data for validation
         const name = document.getElementById('name').value;
         const email = document.getElementById('email').value;
         const message = document.getElementById('message').value;
 
         // Validate form data
         if (!name || !email || !message) {
+            e.preventDefault();
             showFormStatus('Please fill in all fields', 'error');
             return;
         }
 
-        try {
-            // Disable submit button
-            const submitBtn = contactForm.querySelector('button[type="submit"]');
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'SENDING...';
+        // Disable submit button to prevent multiple submissions
+        const submitBtn = contactForm.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'SENDING...';
 
-            // Send data to server
-            const response = await fetch('/api/contact', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ name, email, message })
-            });
+        // Show sending message
+        showFormStatus('Sending your message...', 'success');
 
-            const data = await response.json();
-
-            if (data.success) {
-                showFormStatus('Thank you for your message! I will get back to you soon.', 'success');
-                contactForm.reset();
-            } else {
-                showFormStatus(data.message || 'Something went wrong. Please try again.', 'error');
-            }
-        } catch (error) {
-            console.error('Error submitting form:', error);
-            showFormStatus('Server error. Please try again later.', 'error');
-        } finally {
-            // Re-enable submit button
-            const submitBtn = contactForm.querySelector('button[type="submit"]');
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'SEND MESSAGE';
-        }
+        // Note: The actual form submission is handled by Netlify
+        // This function just provides user feedback
     });
 }
 
+// Handle form submission success (for when the page reloads after submission)
+document.addEventListener('DOMContentLoaded', function() {
+    // Check if this is a form submission success page
+    if (window.location.search.includes('success=true')) {
+        const formStatus = document.getElementById('formStatus');
+        if (formStatus) {
+            showFormStatus('Thank you for your message! I will get back to you soon.', 'success');
+        }
+    }
+});
+
 // Function to show form status messages
 function showFormStatus(message, type) {
+    if (!formStatus) return;
+
     formStatus.textContent = message;
     formStatus.className = `form-status ${type}`;
 

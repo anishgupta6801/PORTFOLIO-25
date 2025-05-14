@@ -590,6 +590,11 @@ section {
     border: 1px solid #fca5a5;
 }
 
+/* Hidden elements (for honeypot) */
+.hidden {
+    display: none;
+}
+
 .contact-info {
     display: flex;
     flex-direction: column;
