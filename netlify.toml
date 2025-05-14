@@ -1,6 +1,13 @@
 [build]
   publish = "."
 
+# Handle success.html explicitly
+[[redirects]]
+  from = "/success.html"
+  to = "/success.html"
+  status = 200
+
+# Handle all other paths
 [[redirects]]
   from = "/*"
   to = "/newport.html"
